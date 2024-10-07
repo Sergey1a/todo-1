@@ -11,9 +11,13 @@
     </div>
     <div class="sidebar-wrapper">
         <ul class="nav">
-            <li class="nav-item" *ngFor="let catigory of categories" (click)="showCategoriesByTask(catigory)">
+            <li class="nav-item pointer"
+                *ngFor="let categori of categories"
+                (click)="showCategoriesByTask(categori)"
+                [class.active]="categori === selectedCategory"
+            >
                 <a class="nav-link">
-                    <p>{{ catigory.title }}</p>
+                    <p>{{ categori.title }}</p>
                 </a>
             </li>
         </ul>
