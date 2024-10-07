@@ -1,19 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {DataHandlerService} from "../../service/data-handler.service";
 import {Category} from "../../model/Category";
 
 @Component({
-  selector: 'app-categories',
-  templateUrl: './categories.component.html',
-  styleUrls: ['./categories.component.css']
+    selector: 'app-categories',
+    templateUrl: './categories.component.html',
+    styleUrls: ['./categories.component.css']
 })
 export class CategoriesComponent implements OnInit {
-  categories:Category[];
+    categories: Category[];
 
-  constructor(private dataHandler: DataHandlerService) { }
+    constructor(private dataHandler: DataHandlerService) {
+    }
 
-  ngOnInit() {
-    this.categories = this.dataHandler.getCategories();
-    console.log(this.categories);
-  }
+    ngOnInit() {
+        this.categories = this.dataHandler.getCategories();
+        console.log(this.categories);
+    }
+
+    showCategoriesByTask(catigory: Category) {
+        this.dataHandler.getTaskByCategory(catigory)
+    }
 }
