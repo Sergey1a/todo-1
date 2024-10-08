@@ -1,8 +1,33 @@
 .completed {
     text-decoration: line-through;
-    color:#797979
+    color: #797979
 }
 
 .novalue {
     color: #a1a1a1 !important;
+}
+
+.col-color {
+    width: 1% !important;
+}
+
+.col-id {
+    width: 7%;
+    text-align: center;
+}
+
+.col-title {
+    width: 45%;
+}
+
+.col-date {
+    width: 15% !important;
+}
+
+.col-priority {
+    width: 15%;
+}
+
+.col-category {
+    width: 20%;
 }
