@@ -1,9 +1,11 @@
-import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {DataHandlerService} from "../../service/data-handler.service";
 import {Task} from 'src/app/model/Task';
 import {MatTableDataSource} from "@angular/material";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
+import {EditTaskDialogComponent} from "../../dialog/edit-task-dialog/edit-task-dialog.component";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
     selector: 'app-tasks',
@@ -12,27 +14,37 @@ import {MatSort} from "@angular/material/sort";
 })
 export class TasksComponent implements OnInit {
 
+
     // поля для таблицы (те, что отображают данные из задачи - должны совпадать с названиями переменных класса)
-    public displayedColumns: string[] = ['color', 'id', 'title', 'date', 'priority', 'category'];
-    public dataSource: MatTableDataSource<Task>; // контейнер - источник данных для таблицы
+    private displayedColumns: string[] = ['color', 'id', 'title', 'date', 'priority', 'category'];
+    private dataSource: MatTableDataSource<Task>; // контейнер - источник данных для таблицы
 
     // ссылки на компоненты таблицы
     @ViewChild(MatPaginator, {static: false}) private paginator: MatPaginator;
     @ViewChild(MatSort, {static: false}) private sort: MatSort;
 
-    public tasks: Task[];
+    @Output()
+    updateTask = new EventEmitter<Task>();
+    private tasks: Task[];
 
     // текущие задачи для отображения на странице
     @Input('tasks')
-    public set setTasks(tasks: Task[]) { // напрямую не присваиваем значения в переменную, только через @Input
+    private set setTasks(tasks: Task[]) { // напрямую не присваиваем значения в переменную, только через @Input
         this.tasks = tasks;
         this.fillTable();
     }
 
-    constructor(private dataHandler: DataHandlerService) {
+    constructor(
+        private dataHandler: DataHandlerService, // доступ к данным
+        private dialog: MatDialog, // работа с диалоговым окном
+
+    ) {
     }
 
     ngOnInit() {
+
+        // this.dataHandler.getAllTasks().subscribe(tasks => this.tasks = tasks);
+
         // датасорс обязательно нужно создавать для таблицы, в него присваивается любой источник (БД, массивы, JSON и пр.)
         this.dataSource = new MatTableDataSource();
         this.fillTable(); // заполняем таблицы данными (задачи) и всеми метаданными
@@ -44,7 +56,7 @@ export class TasksComponent implements OnInit {
     }
 
     // в зависимости от статуса задачи - вернуть цвет названия
-    public getPriorityColor(task: Task) {
+    private getPriorityColor(task: Task): string {
 
         // цвет завершенной задачи
         if (task.completed) {
@@ -56,12 +68,13 @@ export class TasksComponent implements OnInit {
         }
 
         return '#fff'; // TODO вынести цвета в константы (magic strings, magic numbers)
+
     }
 
     // показывает задачи с применением всех текущий условий (категория, поиск, фильтры и пр.)
-    private fillTable() {
+    private fillTable(): void {
 
-        if (!this.dataSource){
+        if (!this.dataSource) {
             return;
         }
 
@@ -93,10 +106,31 @@ export class TasksComponent implements OnInit {
             }
         };
 
+
     }
 
-    private addTableObjects() {
+    private addTableObjects(): void {
         this.dataSource.sort = this.sort; // компонент для сортировки данных (если необходимо)
         this.dataSource.paginator = this.paginator; // обновить компонент постраничности (кол-во записей, страниц)
+    }
+
+    // диалоговое редактирования для добавления задачи
+    public openEditTaskDialog(task: Task): void {
+
+        // открытие диалогового окна
+        const dialogRef = this.dialog.open(EditTaskDialogComponent, {
+            data: [task, 'Редактирование задачи'],
+            autoFocus: false
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            // обработка результатов
+
+            if (result as Task) { // если нажали ОК и есть результат
+                this.updateTask.emit(task);
+                return;
+            }
+
+        });
     }
 }

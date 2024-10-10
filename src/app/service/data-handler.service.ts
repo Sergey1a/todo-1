@@ -5,6 +5,7 @@ import {TaskDAOArray} from "../data/dao/impl/TaskDAOArray";
 import {Category} from "../model/Category";
 import {CategoryDAOArray} from "../data/dao/impl/CategoryDAOArray";
 import {Priority} from "../model/Priority";
+import {PriorityDAOArray} from "../data/dao/impl/PriorityDAOArray";
 
 
 // класс реализовывает методы, которые нужны frontend'у, т.е. для удобной работы представлений
@@ -21,8 +22,14 @@ export class DataHandlerService {
     // (можно подставлять любые релизации, в том числе с БД. Главное - соблюдать интерфейсы)
     private taskDaoArray = new TaskDAOArray();
     private categoryDaoArray = new CategoryDAOArray();
+    private priorityDaoArray = new PriorityDAOArray();
+
 
     constructor() {
+    }
+
+    getAllPrioritys(): Observable<Priority[]> {
+        return this.priorityDaoArray.getAll()
     }
 
     getAllTasks(): Observable<Task[]> {
@@ -32,6 +39,11 @@ export class DataHandlerService {
     getAllCategories(): Observable<Category[]> {
         return this.categoryDaoArray.getAll();
     }
+
+    updateTask(task: Task): Observable<Task> {
+        return this.taskDaoArray.update(task);
+    }
+
 
     // поиск задач по параметрам
     searchTasks(category: Category, searchText: string, status: boolean, priority: Priority): Observable<Task[]> {

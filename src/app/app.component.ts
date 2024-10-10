@@ -19,18 +19,20 @@ export class AppComponent implements OnInit {
 
     constructor(
         private dataHandler: DataHandlerService, // фасад для работы с данными
-    ) {}
+    ) {
+    }
 
     ngOnInit(): void {
         // this.dataHandler.getAllTasks().subscribe(tasks => this.tasks = tasks);
         this.dataHandler.getAllCategories().subscribe(categories => this.categories = categories);
 
         this.onSelectCategory(null); // показать все задачи
+
     }
 
 
     // изменение категории
-    public onSelectCategory(category: Category) {
+    private onSelectCategory(category: Category) {
 
         this.selectedCategory = category;
 
@@ -42,6 +44,22 @@ export class AppComponent implements OnInit {
         ).subscribe(tasks => {
             this.tasks = tasks;
         });
+
     }
 
+    // обновление задачи
+    public onUpdateTask(task: Task) {
+
+        this.dataHandler.updateTask(task).subscribe(() => {
+            this.dataHandler.searchTasks(
+                this.selectedCategory,
+                null,
+                null,
+                null
+            ).subscribe(tasks => {
+                this.tasks = tasks;
+            });
+        });
+
+    }
 }
